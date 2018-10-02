@@ -607,7 +607,7 @@ function splitNodeSerial(rptarg::RPTreeArg, node::TreeNode)
     depth = rptarg.depth
     if rptreeDebugLevel > 0
         lock(debuglock)
-        @printf STDOUT "\n splitNodeSerial process id : %d thread %d depth %d " myid() Threads.threadid()  node.depth
+        @printf stdout "\n splitNodeSerial process id : %d thread %d depth %d " myid() Threads.threadid()  node.depth
         unlock(debuglock)
     end
     #
@@ -622,7 +622,7 @@ function splitNodeSerial(rptarg::RPTreeArg, node::TreeNode)
     end
     if rptreeDebugLevel > 0
         lock(debuglock)
-        @printf STDOUT "\n splitNodeSerial process id : %d thread %d depth %d end " myid() Threads.threadid()  node.depth
+        @printf stdout "\n splitNodeSerial process id : %d thread %d depth %d end " myid() Threads.threadid()  node.depth
         unlock(debuglock)
     end
     return node
@@ -637,7 +637,7 @@ function splitNodeThreaded(rptarg::RPTreeArg, node::TreeNode)
     depth = rptarg.depth
     if rptreeDebugLevel > 0
         lock(debuglock)
-        @printf STDOUT "\n splitNodeTheaded process id : %d depth %d " myid()   node.depth
+        @printf stdout "\n splitNodeTheaded process id : %d depth %d " myid()   node.depth
         unlock(debuglock)
     end
     #
@@ -658,7 +658,7 @@ function splitNodeThreaded(rptarg::RPTreeArg, node::TreeNode)
     end
     if rptreeDebugLevel > 0
         lock(debuglock)
-        @printf STDOUT "\n splitNodeTheaded process id : %d depth %d end " myid()   node.depth
+        @printf stdout "\n splitNodeTheaded process id : %d depth %d end " myid()   node.depth
         unlock(debuglock)
     end
     return node
@@ -669,7 +669,7 @@ end
 function splitNodeParallel(rptarg::RPTreeArg, node::TreeNode)
     #
     depth = rptarg.depth    
-    @printf STDOUT "\n  splitNodeParallel process id : %d depth %d " myid()  node.depth
+    @printf stdout "\n  splitNodeParallel process id : %d depth %d " myid()  node.depth
     #
     if node.depth < depth && length(node.data) > 0
         leftNode,rightNode = splitNodeDiamAndProjection(rptarg, node)
@@ -732,7 +732,7 @@ function randomProjection(rptree::RPTree)
         push!(leafCenters,center)
         leaf=getNextLeafRight(rptree.treedata, real_leaf)
     end
-    @printf STDOUT "\n randomProjection, collected nb leaves = %d \n" length(leafCenters)
+    @printf stdout "\n randomProjection, collected nb leaves = %d \n" length(leafCenters)
     #
     return leafCenters
 end
@@ -787,7 +787,7 @@ function fillSplittingInfo(rptree::RPTree)
     nbproj = 0
     nbdiam = 0
     while !isnull(node)
-        @printf STDOUT " \n dump de noeud : %d, depth %d"  nbseen  get(node).depth
+        @printf stdout " \n dump de noeud : %d, depth %d"  nbseen  get(node).depth
         if rptreeDebugLevel > 1
             dumpPos(get(node))
         end
@@ -806,7 +806,7 @@ function fillSplittingInfo(rptree::RPTree)
         end
         node = getDepthFirstNextRight(rptree.treedata, rnode)
     end
-    @printf STDOUT "\n nbstored = %d" length(rptree.eventDict)
+    @printf stdout "\n nbstored = %d" length(rptree.eventDict)
 end     # end of fillSplittingInfo
 
 
@@ -854,9 +854,9 @@ function analyzeSplittingInfo(rptree::RPTree)
         end
     end
     meanDiam = mean(leafDiameters)
-    @printf STDOUT "\n meanDiameter at max depth = %f" meanDiam
-    @printf STDOUT "\n nb split diam = %d" nbsplitDiam
-    @printf STDOUT "\n nb split proj = %d\n" nbsplitProj
+    @printf stdout "\n meanDiameter at max depth = %f" meanDiam
+    @printf stdout "\n nb split diam = %d" nbsplitDiam
+    @printf stdout "\n nb split proj = %d\n" nbsplitProj
     # 
     return leaves, leafDiameters
 end    # end of analyzeSplittingInfo

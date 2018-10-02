@@ -1,0 +1,11 @@
+name = "RandomProjectionTree"
+uuid = "8b836b70-9b2a-42b1-9437-b3e8e16cacad"
+author = ["Jean-Pierre Both <jean-pierre.both@cea.fr>"]
+
+[deps]
+Clustering = "aaaa29a8-35af-508c-8bc3-b662a17a0fe5"
+Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
+Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Match = "7eb4fadd-790c-5f42-8a69-bfa0b872bfbf"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"

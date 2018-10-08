@@ -298,9 +298,8 @@ function diameterEstimation(D::Distances.SemiMetric, node::TreeNode{KeyVector} ,
     end
     Fcosts=Symmetric(costs,:U)
     maxDiameter = maximum(Fcosts)
-    colCost=sum(Fcosts,1)
-    meanDiameter = sum(colCost)
-    # as we have symetrized we divide by full matrix minus diagonal
+    meanDiameter = sum(Fcosts)
+    # as we have 0 on diagonal, we divide by full matrix minus diagonal
     nbcouple = (nbkept-1) * nbkept
     meanDiameter = meanDiameter/nbcouple
     costmin,imin = findmin(costs)

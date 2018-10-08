@@ -792,7 +792,7 @@ function fillSplittingInfo(rptree::RPTree)
             dumpPos(node)
         end
         nbseen += 1
-        rnode=node)
+        rnode=node
         if length(rnode.children) > 0
             rptree.eventDict[rnode] = rnode.private
         else

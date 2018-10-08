@@ -587,7 +587,7 @@ function splitNodeDiamAndProjection(rptarg::RPTreeArg , node::TreeNode{KeyVector
     elseif medDiam > 0
         leftNode,rightNode, projparams = splitNodeByProjection(node)
         split = splitProj
-        projEvent = RPTProjParams}(projparams)
+        projEvent = RPTProjParams(projparams)
         private = RPTreeEvent(split , diameters, projEvent)
         # else nothing , means all element are equal
     end

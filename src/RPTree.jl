@@ -519,7 +519,7 @@ function splitNodeByProjection(node::TreeNode{KeyVector, RPTreeEvent})
     direction = generateRandomDirection(node)
     # compute scalar product of each element in node with direction. we have the dot function
     nb=length(node.data)
-    scalarProduct = Vector{Float64}(nb)
+    scalarProduct = Vector{Float64}(undef, nb)
     # possibly iterate to avoid the collect ?
     map!(x-> dot(x,direction), scalarProduct, collect(values(node.data)))                            
     medVal=median(scalarProduct)
@@ -576,7 +576,7 @@ function splitNodeDiamAndProjection(rptarg::RPTreeArg , node::TreeNode{KeyVector
     #
     # to store node properties
     #
-    diameters=Vector{Float64}(2)
+    diameters=Vector{Float64}(undef, 2)
     diameters[1] = medDiam
     diameters[2] = maxDiam
     # depending on node sphericity we split one way or the other
@@ -650,7 +650,7 @@ function splitNodeThreaded(rptarg::RPTreeArg, node::TreeNode)
         insertChildInNode(node, leftNode)
         insertChildInNode(node, rightNode)
         # now a threaded loop
-        nodesToSplit = Vector{TreeNode}(2)
+        nodesToSplit = Vector{TreeNode}(undef, 2)
         nodesToSplit[1] = leftNode
         nodesToSplit[2] = rightNode
         Threads.@threads for i in 1:2

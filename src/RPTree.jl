@@ -108,16 +108,16 @@ want to do any learning
 
 * split : the split event coded as constants `splitDiam` or `splitProj` or `splitNull`
 * diameters : a vector of size 2 containing mean diameter and then max diameter
-* projEvent  field of struct Nullable{RPTProjParams}
-* diamEvent  field of struct Nullable{RPTDiamSplit}
+* projEvent  field of struct Union{RPTProjParams, Nothing}
+* diamEvent  field of struct Union{RPTDiamSplit, Nothing}
 
   METHODS
   ------
 
-    1. `function RPTreeEvent(s::Int64, diameters::Vector{Float64}, pivot::Nullable{RPTDiamSplit})`
+    1. `function RPTreeEvent(s::Int64, diameters::Vector{Float64}, pivot::Union{RPTDiamSplit,Nothing})`
     constructor for split on diameter criteria
 
-    2. `function RPTreeEvent(s::Int64, diameters::Vector{Float64}, projData::Nullable{RPTProjParams})`
+    2. `function RPTreeEvent(s::Int64, diameters::Vector{Float64}, projData::Union{RPTProjParams, Nothing})`
         constructor for split on projection against a random Vector
         as diameters are always estimated (the struct of split depends upon computed diameters),
         they always are in the constructor
@@ -132,7 +132,7 @@ mutable struct RPTreeEvent
     split::Int64
     # first mean diam then max diam
     diameters::Vector{Float64}
-    projEvent::Union{RPTProjParams,Nothing}
+    projEvent::Union{RPTProjParams, Nothing}
     diamEvent::Union{RPTDiamSplit, Nothing}
     # constructor for split by diameter
     function RPTreeEvent(s::Int64, diameters::Vector{Float64}, diamEvent::Union{RPTDiamSplit, Nothing})
@@ -558,7 +558,7 @@ function splitNodeDiamAndProjection(rptarg::RPTreeArg , node::TreeNode{KeyVector
     D = rptarg.D
     threshold = rptarg.threshold
     split = splitNull
-    private = Nullable{RPTreeEvent}()
+    private = nothing
     #
     if length(node.data) == 0
         exit(1)
@@ -579,7 +579,7 @@ function splitNodeDiamAndProjection(rptarg::RPTreeArg , node::TreeNode{KeyVector
     # depending on node sphericity we split one way or the other
     if maxDiam/medDiam >= threshold
         # as splitNodeByDiameter clears its data we must get at pivot before the split
-        diamEvent = Nullable{RPTDiamSplit}(RPTDiamSplit(node.data[pivot]))
+        diamEvent = RPTDiamSplit(node.data[pivot])
         leftNode,rightNode, radius = splitNodeByDiameter(D, node, pivot)
         get(diamEvent).radius = radius
         split = splitDiam
@@ -587,7 +587,7 @@ function splitNodeDiamAndProjection(rptarg::RPTreeArg , node::TreeNode{KeyVector
     elseif medDiam > 0
         leftNode,rightNode, projparams = splitNodeByProjection(node)
         split = splitProj
-        projEvent = Nullable{RPTProjParams}(projparams)
+        projEvent = RPTProjParams}(projparams
         private = RPTreeEvent(split , diameters, projEvent)
         # else nothing , means all element are equal
     end
@@ -754,7 +754,7 @@ function getFirstLeftNodeAtDepth(rptree::RPTree, depth::Int64)
         end
     end
     if node.depth == depth
-        return Nullable(node)
+        return node
     end
     #
     return NullNode
@@ -780,28 +780,28 @@ For leaves computes median and max diameter and associate an event with splitNul
 """
 
 function fillSplittingInfo(rptree::RPTree)
-    node = Nullable(rptree.treedata.root)
+    node = rptree.treedata.root
     sampleSize = 512
     #
     nbseen = 0
     nbproj = 0
     nbdiam = 0
-    while !isnull(node)
+    while node != nothing
         @printf stdout " \n dump de noeud : %d, depth %d"  nbseen  get(node).depth
         if rptreeDebugLevel > 1
-            dumpPos(get(node))
+            dumpPos(node)
         end
         nbseen += 1
-        rnode=get(node)
+        rnode=node)
         if length(rnode.children) > 0
-            rptree.eventDict[rnode] = get(rnode.private)
+            rptree.eventDict[rnode] = rnode.private
         else
             # we have a leaf
             fraction = min(1., sampleSize/length(rnode.data))
             res = diameterEstimation(rptree.argument.D, rnode, fraction)
             diameters=[res[1] , res[2]]
             event = RPTreeEvent(diameters)
-            rnode.private = Nullable{RPTreeEvent}(event)
+            rnode.private = RPTreeEvent(event)
             rptree.eventDict[rnode] = event
         end
         node = getDepthFirstNextRight(rptree.treedata, rnode)
@@ -846,8 +846,7 @@ function analyzeSplittingInfo(rptree::RPTree)
             nbleaf = nbleaf + 1
             leaf = item[1]
             # diameters data have been stored in by fillSplittingInfo
-            private = get(leaf.private)
-            medDiam = private.diameters[1]
+            medDiam = leaf.private.diameters[1]
             #
             push!(leafDiameters, medDiam)
             push!(leaves, leaf)
@@ -882,12 +881,11 @@ function fillItemLeafDict(rptree::RPTree)
     # loop from First left Leaf
     leaf = getFirstLeftLeaf(rptree)
     ileaf = 1
-    while !isnull(leaf)
+    while leaf != nothing
         # transfer dict from leaf.data to
-        rleaf = get(leaf)
-        idx = collect(keys(rleaf.data))
+        idx = collect(keys(leaf.data))
         for i in idx
-            itemLeafDict[i] = rleaf
+            itemLeafDict[i] = leaf
         end
         # 
         leaf = getNextLeafRight(leaf)

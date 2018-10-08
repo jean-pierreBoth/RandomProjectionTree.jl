@@ -72,7 +72,7 @@ mutable struct TreeNode{T, U}
     # lateral chaining
     children::Array{TreeNode{T,U},1}
     # to store any application dependant data if necessary
-    private::Union{Some{U}, Nothing}
+    private::Union{U, Nothing}
     #
     l::Threads.RecursiveSpinLock
     # constructor with a parent

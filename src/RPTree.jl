@@ -584,7 +584,7 @@ function splitNodeDiamAndProjection(rptarg::RPTreeArg , node::TreeNode{KeyVector
         # as splitNodeByDiameter clears its data we must get at pivot before the split
         diamEvent = RPTDiamSplit(node.data[pivot])
         leftNode,rightNode, radius = splitNodeByDiameter(D, node, pivot)
-        get(diamEvent).radius = radius
+        diamEvent.radius = radius
         split = splitDiam
         private = RPTreeEvent(split , diameters, diamEvent)
     elseif medDiam > 0
@@ -727,11 +727,11 @@ function randomProjection(rptree::RPTree)
     # now we must iterate through leaves of tree, compute centers and send that to clustering
     leafCenters=Array{Vector{Float64},1}()
     leaf = getFirstLeftLeaf(rptree.treedata)
-    while !Base.isnull(leaf)
-        real_leaf = get(leaf)
+    while leaf != nothing
+        real_leaf = leaf
         realdata = values(real_leaf.data)
         center = sum(realdata)
-        center = center ./ length(get(leaf).data)
+        center = center ./ length(real_leaf.data)
         push!(leafCenters,center)
         leaf=getNextLeafRight(rptree.treedata, real_leaf)
     end

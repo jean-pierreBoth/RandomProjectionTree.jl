@@ -24,6 +24,9 @@ using Distances
 using Clustering
 using Match
 using Distributed
+using LinearAlgebra
+
+
 
 const splitDiam = Int64(1)
 const splitProj = Int64(2)

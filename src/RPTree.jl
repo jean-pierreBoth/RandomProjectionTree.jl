@@ -8,7 +8,9 @@
 #                        CosineDist
 # they are instantiated by calling Euclidean(),  ...
 #
-#  To do optimisation of threshold used in splitting
+#  TODOs:
+#     diameter estimation with kcover algorithm?
+#     optimisation of threshold used in splitting
 #
 
 
@@ -38,9 +40,13 @@ analyzeSplittingInfo
 
 
 """
+KeyVector
+
 base data of node is an indexed vector
 So it is possible when in a node to know the rank
 in original data in tree the node consists in 
+keys(KeyVector) consists in rank of data in the  node in the original vector of vectors 
+dispatched in the tree  
 """
 
 const KeyVector = Dict{Int64,Vector{Float64}}
@@ -282,7 +288,7 @@ function diameterEstimation(D::Distances.SemiMetric, node::TreeNode{KeyVector} ,
     meanDiameter=0.
     nbcouple = 0
     for i in 2:nbkept
-        distancesToI = Vector{Float64}(i-1)    # in fact this is cost free versus one maximal allocation
+        distancesToI = Vector{Float64}(undef,i-1)    # in fact this is cost free versus one maximal allocation
                                                # and maximum taken on a subrange
         map!(j->evaluate(D, node.data[keptI[i]], node.data[keptI[j]]), distancesToI, 1:i-1)
         costs[1:i-1,i]=distancesToI
@@ -315,7 +321,7 @@ function diameterEstimationByRange(D::Distances.SemiMetric, node::TreeNode{KeyVe
     costs=zeros(nbkept,nbkept)   # to store sum of distance of each kept index to all others.
     ikeys = keys(node.data)
     for i in range
-        distancesToI = Vector{Float64}(i-1)
+        distancesToI = Vector{Float64}(undef, i-1)
         map!(j->evaluate(D, node.data[ikeys[keptI[i]]], node.data[ikeys[keptI[j]]]), distancesToI, 1:i-1)
         costs[1:i-1,i]=distancesToI
     end
@@ -344,7 +350,7 @@ function diameterEstimation2tasks(D::Distances.SemiMetric, node::TreeNode{KeyVec
     maxDiameter=0.
     meanDiameter=0.
     nbcouple = 0
-    res = Vector{ Tuple{Float64,Float64, Vector{Float64}} }(2)
+    res = Vector{ Tuple{Float64,Float64, Vector{Float64}} }(undef, 2)
     m=round(Int64, nbkept/sqrt(2))
     @sync begin
         @async  res[1] = remotecall_fetch(2, diameterEstimationByRange, D, node, keptI, 2:m)
@@ -378,13 +384,12 @@ function diameterEstimation2Threads(D::Distances.SemiMetric, node::TreeNode{KeyV
     maxDiameter=0.
     meanDiameter=0.
     nbcouple = 0
-    res = Vector{ Tuple{Float64,Float64, Vector{Float64}} }(2)
+    res = Vector{ Tuple{Float64,Float64, Vector{Float64}} }(undef, 2)
     # compute m so that the 2 threads have the same amount of work!!!
     m=round(Int64, nbkept/sqrt(2.))
     myRanges=Array{UnitRange{Int64}}(2)
     myRanges[1] = 2:m
     myRanges[2] = m+1:nbkept
-    res = Vector{ Tuple{Float64,Float64, Vector{Float64}} }(2)
     Threads.@threads  for i in 1:2  
         res[1] = diameterEstimationByRange(D, node, keptI, 2:m)
         res[2] = diameterEstimationByRange(D, node, keptI, m+1:nbkept)        
@@ -452,8 +457,7 @@ end # end of splitByDiameter
 # generate random direction too split data in node
 
 function generateRandomDirection2(node::TreeNode{KeyVector})
-    state = start(node.data)
-    item, state = next(node.data, state)    
+    item, state = iterate(node.data)    
     dim = length(item[2])
     #
     direction = zeros(dim)
@@ -481,8 +485,7 @@ end
 
 
 function generateRandomDirection(node::TreeNode{KeyVector, RPTreeEvent})
-    state = start(node.data)
-    item, state = next(node.data, state)
+    item, state = iterate(node.data)    
     dim = length(item[2])
     #
     direction = zeros(dim)

@@ -263,7 +263,7 @@ end
 # 
 
 function goToNextRight(t::Tree, n::TreeNode)
-    next_n = nothing
+    next = nothing
     #
     if debugLevel >= 1
         println("\n\n In goToNextRight :")
@@ -280,17 +280,17 @@ function goToNextRight(t::Tree, n::TreeNode)
         if node.depth != 0 && node.rankInParent < length(node.parent.children)
             more = false   # we can go right
             next = node.parent.children[node.rankInParent+1]
-            next_n = next
         else
             if node.parent == nothing
                 more = false
+                next = nothing
             else
                 node = node.parent
             end
         end
     end  # end while
     if debugLevel >= 1
-        println("\n\n exiting  goToNextRight :")
+        println("\n exiting  goToNextRight :")
         if next != nothing
             dumpPos(next)
         else
@@ -298,14 +298,14 @@ function goToNextRight(t::Tree, n::TreeNode)
         end
     end
     #
-    return next_n
+    return next
 end
 
 
 # returns Union{TreeNode{T,U}}, Nothing}
 
 function goToNextLeft(t::Tree, n::TreeNode)
-    next_n = nothing
+    next = nothing
     #
     node = n
     more = true
@@ -314,17 +314,17 @@ function goToNextLeft(t::Tree, n::TreeNode)
         if node.depth != 0 &&  node.rankInParent > 1
             more = false   # we can go left
             next = node.parent.children[node.rankInParent-1]
-            next_n = next
         else
             if node.parent == nothing
                 more = false
+                next = nothing
             else
                 node = node.parent
             end
         end
     end  # end while
     #
-    return next_n
+    return next
 end
 
 
@@ -468,7 +468,7 @@ end
 
     function getFirstRightLeaf(t::Tree)
         
-    returns the first right lead as a Nullable{TreeNode}
+    returns the first right leaf
 
 to be chained with
 

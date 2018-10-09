@@ -173,7 +173,8 @@ const  RPTNode = TreeNode{KeyVector, RPTreeEvent}
  *  depth : The maximum depth of the tree
  *  threshold : the ratio between maxDiameter and mean distance between 2 objects above which
     we split by diameter. If mean / maxDiameter > threshold we split by diameter. So
-    with threshold = 1. we always use diameter rule
+    with threshold = 1. we always use diameter rule and the higher threshold is more 
+    we use projection
 
  CONSTRUCTORS
  -----------
@@ -593,8 +594,7 @@ function splitNodeDiamAndProjection(rptarg::RPTreeArg , node::TreeNode{KeyVector
     elseif medDiam > 0
         leftNode,rightNode, projparams = splitNodeByProjection(node)
         split = splitProj
-        projEvent = RPTProjParams(projparams)
-        private = RPTreeEvent(split , diameters, projEvent)
+        private = RPTreeEvent(split , diameters, projparams)
         # else nothing , means all element are equal
     end
     # 
@@ -720,6 +720,7 @@ function randomProjection(rptree::RPTree)
     node=rptree.treedata.root
     #
     if nworkers() <= 1 && Threads.nthreads() <= 1
+        @printf stdout "\n going serial"
         splitNodeSerial(rptree.argument, node)
     elseif nworkers() <= 1 && Threads.nthreads() > 1
         splitNodeThreaded(rptree.argument, node)
@@ -732,10 +733,14 @@ function randomProjection(rptree::RPTree)
     leafCenters=Array{Vector{Float64},1}()
     leaf = getFirstLeftLeaf(rptree.treedata)
     while leaf != nothing
+        @printf stdout "\n depth %d rank in Parent %d" leaf.depth leaf.rankInParent
         realdata = values(leaf.data)
+        @printf stdout "\n randomProjection before sum"
+        
         center = sum(realdata)
-        center = center ./ length(leaf.data)
+        center = center ./ length(realdata)
         push!(leafCenters,center)
+        @printf stdout "\n randomProjection before getNextLeafRight"
         leaf=getNextLeafRight(rptree.treedata, leaf)
     end
     @printf stdout "\n randomProjection, collected nb leaves = %d \n" length(leafCenters)
@@ -793,26 +798,27 @@ function fillSplittingInfo(rptree::RPTree)
     nbproj = 0
     nbdiam = 0
     while node != nothing
-        @printf stdout " \n dump de noeud : %d, depth %d"  nbseen  get(node).depth
+        @printf stdout " \n dump de noeud : %d, depth %d"  nbseen  node.depth
         if rptreeDebugLevel > 1
             dumpPos(node)
         end
         nbseen += 1
-        rnode=node
-        if length(rnode.children) > 0
-            rptree.eventDict[rnode] = rnode.private
+        if length(node.children) > 0
+            rptree.eventDict[node] = node.private
         else
             # we have a leaf
-            fraction = min(1., sampleSize/length(rnode.data))
-            res = diameterEstimation(rptree.argument.D, rnode, fraction)
+            fraction = min(1., sampleSize/length(node.data))
+            res = diameterEstimation(rptree.argument.D, node, fraction)
             diameters=[res[1] , res[2]]
+            # the following just store diameters but do not register an event so that analyzeSplittingInfo
+            # will not be polluted
             event = RPTreeEvent(diameters)
-            rnode.private = RPTreeEvent(event)
-            rptree.eventDict[rnode] = event
+            node.private = event
+            rptree.eventDict[node] = event
         end
-        node = getDepthFirstNextRight(rptree.treedata, rnode)
+        node = getDepthFirstNextRight(rptree.treedata, node)
     end
-    @printf stdout "\n nbstored = %d" length(rptree.eventDict)
+    @printf stdout "\n nbstored = %d \n" length(rptree.eventDict)
 end     # end of fillSplittingInfo
 
 
@@ -838,9 +844,9 @@ function analyzeSplittingInfo(rptree::RPTree)
         fillSplittingInfo(rptree)
     end
     #
-    state = start(rptree.eventDict)
-    while !done(rptree.eventDict, state)
-        item , state = next(rptree.eventDict, state)
+    res_iter = iterate(rptree.eventDict)
+    while res_iter != nothing
+        item = res_iter[1]
         #        item[1] is a node, item[2] a RPTreeEvent
         diams  = item[2].diameters
         if item[2].split == splitDiam
@@ -857,6 +863,7 @@ function analyzeSplittingInfo(rptree::RPTree)
             push!(leafDiameters, medDiam)
             push!(leaves, leaf)
         end
+        res_iter = iterate(rptree.eventDict, res_iter[2])
     end
     meanDiam = mean(leafDiameters)
     @printf stdout "\n meanDiameter at max depth = %f" meanDiam

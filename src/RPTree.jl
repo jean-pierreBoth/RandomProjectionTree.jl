@@ -26,6 +26,7 @@ using Match
 using Distributed
 using Statistics
 using LinearAlgebra
+using Random
 
 
 const splitDiam = Int64(1)
@@ -463,7 +464,7 @@ function generateRandomDirection2(node::TreeNode{KeyVector})
     dim = length(item[2])
     #
     direction = zeros(dim)
-    randomNumbers = zeros(dim+1)
+    randomNumbers = Vector{Float64}(undef, dim+1)
     #
     Random.rand!(randomNumbers)
     i = 1
@@ -491,7 +492,7 @@ function generateRandomDirection(node::TreeNode{KeyVector, RPTreeEvent})
     dim = length(item[2])
     #
     direction = zeros(dim)
-    randomNumbers = zeros(dim+1)
+    randomNumbers = Vector{Float64}(undef, dim+1)
     #
     Random.rand!(randomNumbers)
     halfsize = round(Int64,dim/2)

@@ -280,7 +280,7 @@ function goToNextRight(t::Tree, n::TreeNode)
         if node.depth != 0 && node.rankInParent < length(node.parent.children)
             more = false   # we can go right
             next = node.parent.children[node.rankInParent+1]
-            next_n = next::Union{TreeNode{T,U}, Nothing}
+            next_n = next
         else
             if node.parent == nothing
                 more = false

@@ -181,10 +181,10 @@ end
 
 function dumpPos(n::TreeNode)
     if n.depth == 0
-        @printf STDOUT "\n\n"
+        @printf stdout "\n\n"
     end
     if n.depth >= 0
-        @printf STDOUT "\n depth %d rank in Parent %d" n.depth n.rankInParent
+        @printf stdout "\n depth %d rank in Parent %d" n.depth n.rankInParent
         if n.parent != nothing
             dumpPos(n.parent)
         end
@@ -303,8 +303,9 @@ end
 
 
 # returns Union{TreeNode{T,U}}, Nothing}
+
 function goToNextLeft(t::Tree, n::TreeNode)
-    next_n = nothing::Union{TreeNode{T,U}, Nothing}
+    next_n = nothing
     #
     node = n
     more = true
@@ -313,7 +314,7 @@ function goToNextLeft(t::Tree, n::TreeNode)
         if node.depth != 0 &&  node.rankInParent > 1
             more = false   # we can go left
             next = node.parent.children[node.rankInParent-1]
-            next_n = next::Union{TreeNode{T,U}, Nothing}
+            next_n = next
         else
             if node.parent == nothing
                 more = false
@@ -331,7 +332,7 @@ end
 # iteration depth first left to right 
 
 function getDepthFirstNextRight(t::Tree, n::TreeNode)
-    next = nothing::Union{TreeNode{T,U}, Nothing}
+    next = nothing
     # try to go down, if not possible go right
     if length(n.children) > 0
         next = n.children[1]
@@ -347,7 +348,7 @@ end
 # iteration depth first right to left
 
 function getDepthFirstNextLeft(t::Tree, n::TreeNode)
-    next = nothing::Union{TreeNode{T,U}, Nothing}
+    next = nothing
     # try to go down, if not possible go right
     if length(n.children) > 0
         next = n.children[length(n.children)]
@@ -391,9 +392,9 @@ function getLeftSibling(t::Tree, n::TreeNode)
     end
     #
     if rnode.depth == n.depth
-        return rnode::Union{TreeNode{T,U}, Nothing}
+        return rnode
     else
-        return nothing::Union{TreeNode{T,U}, Nothing}
+        return nothing
     end
 end
 
@@ -407,7 +408,7 @@ end
  
 function getRightSibling(t::Tree, n::TreeNode)
     if n.depth == 0
-        return nothing::Union{TreeNode{T,U}, Nothing}
+        return nothing
     end
     rightSibling = goToNextRight(t,n)  
     if rightSibling == nothing
@@ -432,7 +433,7 @@ function getRightSibling(t::Tree, n::TreeNode)
     end
     #
     if rnode.depth == n.depth
-        return rnode::Union{TreeNode{T,U}, Nothing}
+        return rnode
     else
         return nothing
     end
@@ -533,7 +534,7 @@ function deleteSubTree(t::Tree, n::TreeNode)
         end
         resize!(parent.children, nb-1)
     else
-        parent.children = Array{TreeNode{T,U},1}()
+        resize!(parent.children, 0) 
     end
     finalize(n)
 end

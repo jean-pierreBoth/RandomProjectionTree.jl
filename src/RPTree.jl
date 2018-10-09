@@ -728,15 +728,15 @@ function randomProjection(rptree::RPTree)
         rptree.treedata.root = node
     end
     # now we must iterate through leaves of tree, compute centers and send that to clustering
+    @printf stdout "\n randomProjection, collecting leaves of tree \n"
     leafCenters=Array{Vector{Float64},1}()
     leaf = getFirstLeftLeaf(rptree.treedata)
     while leaf != nothing
-        real_leaf = leaf
-        realdata = values(real_leaf.data)
+        realdata = values(leaf.data)
         center = sum(realdata)
-        center = center ./ length(real_leaf.data)
+        center = center ./ length(leaf.data)
         push!(leafCenters,center)
-        leaf=getNextLeafRight(rptree.treedata, real_leaf)
+        leaf=getNextLeafRight(rptree.treedata, leaf)
     end
     @printf stdout "\n randomProjection, collected nb leaves = %d \n" length(leafCenters)
     #

@@ -28,7 +28,6 @@ using Statistics
 using LinearAlgebra
 
 
-
 const splitDiam = Int64(1)
 const splitProj = Int64(2)
 const splitNull = Int64(3)   # when a node is not splitted (leaf)
@@ -466,7 +465,7 @@ function generateRandomDirection2(node::TreeNode{KeyVector})
     direction = zeros(dim)
     randomNumbers = zeros(dim+1)
     #
-    rand!(randomNumbers)
+    Random.rand!(randomNumbers)
     i = 1
     while i < dim
         s = sqrt(-2 * log(randomNumbers[i]))
@@ -494,7 +493,7 @@ function generateRandomDirection(node::TreeNode{KeyVector, RPTreeEvent})
     direction = zeros(dim)
     randomNumbers = zeros(dim+1)
     #
-    rand!(randomNumbers)
+    Random.rand!(randomNumbers)
     halfsize = round(Int64,dim/2)
     @simd for i in 1:halfsize
         j=2*i-1

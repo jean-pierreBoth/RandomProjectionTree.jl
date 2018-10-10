@@ -733,14 +733,11 @@ function randomProjection(rptree::RPTree)
     leafCenters=Array{Vector{Float64},1}()
     leaf = getFirstLeftLeaf(rptree.treedata)
     while leaf != nothing
-        @printf stdout "\n depth %d rank in Parent %d" leaf.depth leaf.rankInParent
-        realdata = values(leaf.data)
-        @printf stdout "\n randomProjection before sum"
-        
+#        @printf stdout "\n depth %d rank in Parent %d" leaf.depth leaf.rankInParent
+        realdata = values(leaf.data)        
         center = sum(realdata)
         center = center ./ length(realdata)
         push!(leafCenters,center)
-        @printf stdout "\n randomProjection before getNextLeafRight"
         leaf=getNextLeafRight(rptree.treedata, leaf)
     end
     @printf stdout "\n randomProjection, collected nb leaves = %d \n" length(leafCenters)
@@ -798,8 +795,8 @@ function fillSplittingInfo(rptree::RPTree)
     nbproj = 0
     nbdiam = 0
     while node != nothing
-        @printf stdout " \n dump de noeud : %d, depth %d"  nbseen  node.depth
         if rptreeDebugLevel > 1
+            @printf stdout " \n dump de noeud : %d, depth %d"  nbseen  node.depth
             dumpPos(node)
         end
         nbseen += 1

@@ -84,10 +84,10 @@ end
 This struct stores the dalong which data are projected.
 
  FIELDS
- -----
+ 
 
-    * projray : ray on which do project data
-    * cosineVector : a vector containing for each data the cosine with projray.
+* projray : ray on which do project data
+* cosineVector : a vector containing for each data the cosine with projray.
 
      Data are split according to position of cosine above or below median of cosine)
 """
@@ -111,7 +111,7 @@ We store the event as it enables propagating a new data across the tree if we
 want to do any learning
 
  FIELDS
- -----
+ 
 
 * split : the split event coded as constants `splitDiam` or `splitProj` or `splitNull`
 * diameters : a vector of size 2 containing mean diameter and then max diameter
@@ -119,7 +119,7 @@ want to do any learning
 * diamEvent  field of struct Union{RPTDiamSplit, Nothing}
 
   METHODS
-  ------
+  
 
     1. `function RPTreeEvent(s::Int64, diameters::Vector{Float64}, pivot::Union{RPTDiamSplit,Nothing})`
     constructor for split on diameter criteria
@@ -162,7 +162,7 @@ const  RPTNode = TreeNode{KeyVector, RPTreeEvent}
  collects the argument for tree growing
 
  FIELDS
- -----
+ 
  *  D : the metric to use to compute all distances
  *  depth : The maximum depth of the tree
  *  threshold : the ratio between maxDiameter and mean distance between 2 objects above which
@@ -171,7 +171,7 @@ const  RPTNode = TreeNode{KeyVector, RPTreeEvent}
     we use projection
 
  CONSTRUCTORS
- -----------
+ 
  
   
 """
@@ -192,7 +192,7 @@ The struct RPTree stores the list of event that occurred during tree constructio
 The parameters used to grow the tree
 
  FIELDS
-------    
+   
 * treedata : the Tree 
 * argument : the parameters describing tree growing
 * eventDict : the event that occured in each node.

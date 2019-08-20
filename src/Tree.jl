@@ -62,7 +62,6 @@ CONSTRUCTORS
 2.    `function TreeNode{T}(dataArg::Array{T,1})`.
        constructor for root node without parent
 """
-
 mutable struct TreeNode{T, U} 
     # fields   
     data::T   # a vector of Data
@@ -144,10 +143,8 @@ a Tree consists in
 
 *  a root node of struct T
 *  a lock to serialize operations on Tree if parallel computations are done
-    
 
 """
-    
 mutable struct Tree{T, U}
     #
     root::TreeNode{T, U}
@@ -168,7 +165,6 @@ end
 dump recursive posiiton
 
 """
-
 function dumpPos(out::IOStream, n::TreeNode)
     if n.depth > 1
         @printf out "\n depth %d rank in Parent %d" n.depth n.rankInParent
@@ -364,7 +360,6 @@ end
     function getLeftSibling(t::Tree, n::TreeNode)
     return left sibling (left neighbour at same depth) of a node a Nullable{Node{T}} 
 """
-
 function getLeftSibling(t::Tree, n::TreeNode)
     if n.depth == 0
         return nothing
@@ -404,8 +399,6 @@ end
        function getRightSibling(t::Tree, n::TreeNode)
     return right sibling (right neighbour at same depth) of a node a Nullable{Node{T}} 
 """
-
- 
 function getRightSibling(t::Tree, n::TreeNode)
     if n.depth == 0
         return nothing
@@ -453,7 +446,6 @@ to be chained with :
     `function getNextLeafRight(t::Tree, n::TreeNode)`
 
 """
-
 function getFirstLeftLeaf(t::Tree)
     # iterates depth first until no more children
     node = t.root
@@ -475,7 +467,6 @@ to be chained with
     function getNextLeafLeft(t::Tree, n::TreeNode)
 
 """
-
 function getFirstRightLeaf(t::Tree)
     # iterates depth first until no more children
     node = t.root
@@ -490,7 +481,6 @@ end
 """
   `function getNextLeafRight(t::Tree, n::TreeNode)`
 """
-
 function getNextLeafRight(t::Tree, n::TreeNode)
     nextleaf = nothing
     # go up until I can go right
@@ -509,7 +499,6 @@ end
 
    returns leaf as a Nullable{TreeNode}
 """
-
 function getNextLeafLeft(t::Tree, n::TreeNode)
     nextleaf = nothing
     # go up until I can go right

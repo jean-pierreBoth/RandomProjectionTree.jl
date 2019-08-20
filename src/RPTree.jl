@@ -52,7 +52,6 @@ in original data in tree the node consists in
 keys(KeyVector) consists in rank of data in the  node in the original vector of vectors 
 dispatched in the tree  
 """
-
 const KeyVector = Dict{Int64,Vector{Float64}}
 
 
@@ -69,7 +68,6 @@ This struct stores data necessary to describe a split by diameter
 * radius : distance to pivot above which we go to right, under which we go to left
 
     """
-
 mutable struct RPTDiamSplit
     pivot::Vector{Float64}
     radius::Float64
@@ -93,7 +91,6 @@ This struct stores the dalong which data are projected.
 
      Data are split according to position of cosine above or below median of cosine)
 """
-
 mutable struct RPTProjParams
     projray::Vector{Float64}
     cosineVector::Vector{Float64}
@@ -135,9 +132,6 @@ want to do any learning
     3. `function RPTreeEvent(diameters::Vector{Float64})`
          a constructor used to just store diameter estimation at leaves. Used with event splitNull
 """
-
-
-
 mutable struct RPTreeEvent
     split::Int64
     # first mean diam then max diam
@@ -181,7 +175,6 @@ const  RPTNode = TreeNode{KeyVector, RPTreeEvent}
  
   
 """
-
 mutable struct RPTreeArg
     D::Distances.SemiMetric
     # the depth of tree
@@ -206,9 +199,6 @@ The parameters used to grow the tree
 * treelock : a lock to manipulate eventDict 
     
 """
-
-
-
 mutable struct RPTree
     treedata::Tree{KeyVector, RPTreeEvent}
     argument::RPTreeArg

@@ -15,7 +15,7 @@
 
 
 rptreeDebugLevel = 1
-debuglock=Threads.RecursiveSpinLock()
+debuglock=Threads.SpinLock()
 
 
 include("Tree.jl")

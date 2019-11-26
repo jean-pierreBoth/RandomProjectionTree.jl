@@ -73,7 +73,7 @@ mutable struct TreeNode{T, U}
     # to store any application dependant data if necessary
     private::Union{U, Nothing}
     #
-    l::Threads.RecursiveSpinLock
+    l::Threads.SpinLock
     # constructor with a parent
     function TreeNode{T,U}(parentArg::TreeNode{T,U}, dataArg::T) where {T,U}
         if debugLevel > 0
@@ -85,7 +85,7 @@ mutable struct TreeNode{T, U}
         rankInParent = length(parent.children)+1
         children=Array{TreeNode{T, U},1}()
         nullprivatedata = nothing
-        new(dataArg, depth, 0 , parent, children, nullprivatedata, Threads.RecursiveSpinLock() )
+        new(dataArg, depth, 0 , parent, children, nullprivatedata, Threads.SpinLock() )
         #
         # we could do:
         # n.rankInParent = length(parent.children)+1
@@ -102,7 +102,7 @@ mutable struct TreeNode{T, U}
         parent = nothing
         data=dataArg
         children=Array{TreeNode{T, U},1}()
-        new(data, depth,rankInParent, parent, children, Nullable{U}(privatedata) , Threads.RecursiveSpinLock())
+        new(data, depth,rankInParent, parent, children, Nullable{U}(privatedata) , Threads.SpinLock())
     end
     # constructor for root node of Tree without private data
     function TreeNode{T, U}(dataArg::T) where{T,U}
@@ -113,7 +113,7 @@ mutable struct TreeNode{T, U}
         data=dataArg
         children=Array{TreeNode{T, U},1}()
         nullprivatedata = nothing
-        new(data, depth,rankInParent, parent, children, nullprivatedata, Threads.RecursiveSpinLock())
+        new(data, depth,rankInParent, parent, children, nullprivatedata, Threads.SpinLock())
     end
 end
 

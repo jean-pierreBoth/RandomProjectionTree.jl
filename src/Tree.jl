@@ -12,25 +12,25 @@
 
 export
 # TreeNode methods
-TreeNode,
-NullNode,
-dumpPos,
-isvoid,
-hasChildren,
-insertChildInNode,
+    TreeNode,
+    NullNode,
+    dumpPos,
+    isvoid,
+    hasChildren,
+    insertChildInNode,
 #
 #             Tree
 #             depth first , left to right iterator
-Tree,
+    Tree,
 setDebugLevel,
-getFirstLeftLeaf,
-getNextLeafRight,
-getNextLeafLeft,
-getDepthFirstNextRight,
-getDepthFirstNextLeft,
-getLeftSibling,
-getRightSibling,
-getNextBrother
+    getFirstLeftLeaf,
+    getNextLeafRight,
+    getNextLeafLeft,
+    getDepthFirstNextRight,
+    getDepthFirstNextLeft,
+    getLeftSibling,
+    getRightSibling,
+    getNextBrother
 
 ###################################
 
@@ -73,7 +73,7 @@ mutable struct TreeNode{T, U}
     # to store any application dependant data if necessary
     private::Union{U, Nothing}
     #
-    l::Threads.SpinLock
+    l::Threads.ReentrantLock
     # constructor with a parent
     function TreeNode{T,U}(parentArg::TreeNode{T,U}, dataArg::T) where {T,U}
         if debugLevel > 0
@@ -85,7 +85,7 @@ mutable struct TreeNode{T, U}
         rankInParent = length(parent.children)+1
         children=Array{TreeNode{T, U},1}()
         nullprivatedata = nothing
-        new(dataArg, depth, 0 , parent, children, nullprivatedata, Threads.SpinLock() )
+        new(dataArg, depth, 0 , parent, children, nullprivatedata, Threads.ReentrantLock() )
         #
         # we could do:
         # n.rankInParent = length(parent.children)+1
@@ -102,7 +102,7 @@ mutable struct TreeNode{T, U}
         parent = nothing
         data=dataArg
         children=Array{TreeNode{T, U},1}()
-        new(data, depth,rankInParent, parent, children, Nullable{U}(privatedata) , Threads.SpinLock())
+        new(data, depth,rankInParent, parent, children, Nullable{U}(privatedata) , Threads.ReentrantLock())
     end
     # constructor for root node of Tree without private data
     function TreeNode{T, U}(dataArg::T) where{T,U}
@@ -113,7 +113,7 @@ mutable struct TreeNode{T, U}
         data=dataArg
         children=Array{TreeNode{T, U},1}()
         nullprivatedata = nothing
-        new(data, depth,rankInParent, parent, children, nullprivatedata, Threads.SpinLock())
+        new(data, depth,rankInParent, parent, children, nullprivatedata, Threads.ReentrantLock())
     end
 end
 

@@ -15,7 +15,7 @@
 
 
 rptreeDebugLevel = 1
-debuglock=Threads.SpinLock()
+debuglock=Threads.ReentrantLock()
 
 
 include("Tree.jl")
@@ -204,7 +204,7 @@ mutable struct RPTree
     argument::RPTreeArg
     eventDict::Dict{TreeNode{KeyVector,RPTreeEvent}, RPTreeEvent}
     #
-    treelock::Threads.RecursiveSpinLock
+    treelock::Threads.ReentrantLock
     #
     function RPTree(argumentArg::RPTreeArg, vdata::Array{Vector{Float64},1})
         eventDict = Dict{TreeNode{KeyVector,RPTreeEvent}, RPTreeEvent}()
@@ -213,43 +213,10 @@ mutable struct RPTree
         for i in 1:length(vdata)
             keyData[i] = vdata[i]
         end
-        new(Tree{KeyVector, RPTreeEvent}(keyData), argumentArg, eventDict, Threads.RecursiveSpinLock())
+        new(Tree{KeyVector, RPTreeEvent}(keyData), argumentArg, eventDict, Threads.ReentrantLock())
     end
 end
 
-
-
-function myjaccard(a::Array{Float64,1}, b::Array{Float64,1})
-    num = 0.
-    den = 0.
-    for I in 1:length(a)
-        @inbounds ai = a[I]
-        @inbounds bi = b[I]
-        abs_m = abs(ai-bi)
-        abs_p = abs(ai+bi)
-        num += abs_p - abs_m
-        den += abs_p + abs_m   
-    end
-    1. - num/den
-end
-
-
-function jaccard_C(a::Array{Float64,1}, b::Array{Float64,1})
-    return ccall((:jaccard,"mylibjulia.so"),Float64,(Int64,Ptr{Float64},Ptr{Float64}),length(a),a,b)
-end
-
-#
-#  estimation of node center and mean distance to center
-#  This loop should be parallelized
-#
-
-
-
-
-
-#
-#  
-#
 
 
 

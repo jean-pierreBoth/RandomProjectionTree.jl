@@ -454,14 +454,14 @@ function generateRandomDirection(node::TreeNode{KeyVector, RPTreeEvent})
     #
     Random.rand!(randomNumbers)
     halfsize = round(Int64,dim/2)
-    @simd for i in 1:halfsize
+    @inbounds @simd for i in 1:halfsize
         j=2*i-1
-        @inbounds s = sqrt(-2 * log(randomNumbers[j]))
-        @inbounds t = 2*randomNumbers[j+1]*pi
+        s = sqrt(-2 * log(randomNumbers[j]))
+        t = 2*randomNumbers[j+1]*pi
         g1 = s * cos(t)
         g2 = s * sin(t)
-        @inbounds direction[j] = g1
-        @inbounds direction[j+1] = g2        
+        irection[j] = g1
+        direction[j+1] = g2        
     end
     if dim%2 != 0
         s = sqrt(-2 * log(randomNumbers[dim]))

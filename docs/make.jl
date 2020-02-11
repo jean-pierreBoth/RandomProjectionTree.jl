@@ -6,11 +6,11 @@ using Documenter, RandomProjectionTree
 
 
 makedocs(
-    format = :html,
+    format = Documenter.HTML(prettyurls = false),
     sitename = "RandomProjectionTree",
     pages = Any[
         "Introduction" => "INTRO.md",
-        "RPTree.jl documentation" => "index.md",
+        "RPTree.jl functions" => "index.md",
     ]
 )
 

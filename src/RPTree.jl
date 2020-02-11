@@ -607,9 +607,11 @@ function splitNodeParallel(rptarg::RPTreeArg, node::TreeNode)
         leftNode,rightNode = splitNodeDiamAndProjection(rptarg, node)
         #
         if nworkers() >= 2 && node.depth < 1
+            resLeftSubTree = Future()
+            resRightSubTree = Future()
             @sync begin
-                resLeftSubTree =  @spawn splitNodeThreaded(rptarg, leftNode) 
-                resRightSubTree = @spawn splitNodeThreaded(rptarg, rightNode)
+                resLeftSubTree =  @spawnat :any splitNodeThreaded(rptarg, leftNode) 
+                resRightSubTree = @spawnat :any splitNodeThreaded(rptarg, rightNode)
             end
             leftNode2 = fetch(resLeftSubTree)
             rightNode2 = fetch(resRightSubTree)

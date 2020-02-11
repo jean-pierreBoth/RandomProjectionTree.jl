@@ -34,13 +34,13 @@ const splitProj = Int64(2)
 const splitNull = Int64(3)   # when a node is not splitted (leaf)
 
 export
-RPTree,
-RPTreeArg,
-RPTevent,
-RPTProjParams,
-RPTreeEvent,
-randomProjection,
-analyzeSplittingInfo
+    RPTree,
+    RPTreeArg,
+    RPTevent,
+    RPTProjParams,
+    RPTreeEvent,
+    randomProjection,
+    analyzeSplittingInfo
 
 
 """

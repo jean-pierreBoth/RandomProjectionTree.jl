@@ -22,15 +22,13 @@ export
 #             Tree
 #             depth first , left to right iterator
     Tree,
-setDebugLevel,
     getFirstLeftLeaf,
     getNextLeafRight,
     getNextLeafLeft,
     getDepthFirstNextRight,
     getDepthFirstNextLeft,
     getLeftSibling,
-    getRightSibling,
-    getNextBrother
+    getRightSibling
 
 ###################################
 
@@ -102,7 +100,7 @@ mutable struct TreeNode{T, U}
         parent = nothing
         data=dataArg
         children=Array{TreeNode{T, U},1}()
-        new(data, depth,rankInParent, parent, children, Nullable{U}(privatedata) , Threads.ReentrantLock())
+        new(data, depth,rankInParent, parent, children, privatedata , Threads.ReentrantLock())
     end
     # constructor for root node of Tree without private data
     function TreeNode{T, U}(dataArg::T) where{T,U}
@@ -168,7 +166,7 @@ dump recursive posiiton
 function dumpPos(out::IOStream, n::TreeNode)
     if n.depth > 1
         @printf out "\n depth %d rank in Parent %d" n.depth n.rankInParent
-        if n.parent != nothing
+        if n.parent !== nothing
             dumpPos(out, n.parent)
         end
     end
@@ -181,7 +179,7 @@ function dumpPos(n::TreeNode)
     end
     if n.depth >= 0
         @printf stdout "\n depth %d rank in Parent %d" n.depth n.rankInParent
-        if n.parent != nothing
+        if n.parent !== nothing
             dumpPos(n.parent)
         end
     end
@@ -227,28 +225,9 @@ end
 
 
 function getParent(n::TreeNode)
-    return parent
+    return n.parent
 end
 
-
-
-
-# The following implies that T<:AbstractArray
-# we must provide a function evaluate(D,t1::T; t2::T) as in metrics.jl  package Distances
-
-
-
-
-# returns  Union{TreeNode{T,U}}, Nothing}
-function getNextBrotherRight(t::Tree, n::TreeNode)
-    if n.rankInParent < length(get(parent).children)
-        next = parent.children[n.rankInParent + 1]
-        return n::Union{TreeNode{T,U}, Nothing}
-    else
-        return nothing::Union{TreeNode{T,U}, Nothing}
-    end
-    # 
-end
 
 
 
@@ -277,7 +256,7 @@ function goToNextRight(t::Tree, n::TreeNode)
             more = false   # we can go right
             next = node.parent.children[node.rankInParent+1]
         else
-            if node.parent == nothing
+            if node.parent === nothing
                 more = false
                 next = nothing
             else
@@ -287,7 +266,7 @@ function goToNextRight(t::Tree, n::TreeNode)
     end  # end while
     if debugLevel >= 1
         println("\n exiting  goToNextRight :")
-        if next != nothing
+        if next !== nothing
             dumpPos(next)
         else
             println("  goToNextRight returns null")
@@ -311,7 +290,7 @@ function goToNextLeft(t::Tree, n::TreeNode)
             more = false   # we can go left
             next = node.parent.children[node.rankInParent-1]
         else
-            if node.parent == nothing
+            if node.parent === nothing
                 more = false
                 next = nothing
             else
@@ -365,7 +344,7 @@ function getLeftSibling(t::Tree, n::TreeNode)
         return nothing
     end
     leftSibling =  goToNextLeft(t,n)  
-    if leftSibling == nothing
+    if leftSibling === nothing
         return leftSibling
     end
     #
@@ -404,7 +383,7 @@ function getRightSibling(t::Tree, n::TreeNode)
         return nothing
     end
     rightSibling = goToNextRight(t,n)  
-    if rightSibling == nothing
+    if rightSibling === nothing
         return rightSibling
     end
     #
@@ -486,7 +465,7 @@ function getNextLeafRight(t::Tree, n::TreeNode)
     # go up until I can go right
     nextleaf = goToNextRight(t,n)
     # then go down until bottom
-    while nextleaf != nothing && length(nextleaf.children) > 0
+    while nextleaf !== nothing && length(nextleaf.children) > 0
         nextleaf = nextleaf.children[1]
     end    
     #
@@ -504,7 +483,7 @@ function getNextLeafLeft(t::Tree, n::TreeNode)
     # go up until I can go right
     nextleaf = goToNextLeft(t,n)
     # then go down until bottom
-    while nextleaf != nothing && length(nextleaf.children) > 0
+    while nextleaf !== nothing && length(nextleaf.children) > 0
         nextleaf = nextleaf.children[length(nextleaf.children)]
     end    
     #

@@ -1,4 +1,3 @@
-push!(LOAD_PATH, "/media/jpboth/scandisk1/Julia/")
 
 DOCUMENTER_DEBUG=true
 
@@ -17,7 +16,7 @@ makedocs(
 deploydocs(
     repo = "RandomProjectionTree.git",
     target = "build",
-    julia = "0.6",
+    julia = "1.3",
     osname = "linux",
     deps = nothing,
     make = nothing

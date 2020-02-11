@@ -36,7 +36,6 @@ const splitNull = Int64(3)   # when a node is not splitted (leaf)
 export
     RPTree,
     RPTreeArg,
-    RPTevent,
     RPTProjParams,
     RPTreeEvent,
     randomProjection,
@@ -460,7 +459,7 @@ function generateRandomDirection(node::TreeNode{KeyVector, RPTreeEvent})
         t = 2*randomNumbers[j+1]*pi
         g1 = s * cos(t)
         g2 = s * sin(t)
-        irection[j] = g1
+        direction[j] = g1
         direction[j+1] = g2        
     end
     if dim%2 != 0
@@ -649,8 +648,8 @@ function splitNodeParallel(rptarg::RPTreeArg, node::TreeNode)
         else
             insertChildInNode(node, leftNode)
             insertChildInNode(node, rightNode)
-            splitNodeSerial(rptree, leftNode)
-            splitNodeSerial(rptree, rightNode)
+            splitNodeSerial(rptarg, leftNode)
+            splitNodeSerial(rptarg, rightNode)
         end
     end
     return node
@@ -689,7 +688,7 @@ function randomProjection(rptree::RPTree)
     @printf stdout "\n randomProjection, collecting leaves of tree \n"
     leafCenters=Array{Vector{Float64},1}()
     leaf = getFirstLeftLeaf(rptree.treedata)
-    while leaf != nothing
+    while leaf !== nothing
 #        @printf stdout "\n depth %d rank in Parent %d" leaf.depth leaf.rankInParent
         realdata = values(leaf.data)        
         center = sum(realdata)
@@ -751,7 +750,7 @@ function fillSplittingInfo(rptree::RPTree)
     nbseen = 0
     nbproj = 0
     nbdiam = 0
-    while node != nothing
+    while node !== nothing
         if rptreeDebugLevel > 1
             @printf stdout " \n dump de noeud : %d, depth %d"  nbseen  node.depth
             dumpPos(node)
@@ -799,7 +798,7 @@ function analyzeSplittingInfo(rptree::RPTree)
     end
     #
     res_iter = iterate(rptree.eventDict)
-    while res_iter != nothing
+    while res_iter !== nothing
         item = res_iter[1]
         #        item[1] is a node, item[2] a RPTreeEvent
         diams  = item[2].diameters
@@ -848,7 +847,7 @@ function fillItemLeafDict(rptree::RPTree)
     # loop from First left Leaf
     leaf = getFirstLeftLeaf(rptree)
     ileaf = 1
-    while leaf != nothing
+    while leaf !== nothing
         # transfer dict from leaf.data to
         idx = collect(keys(leaf.data))
         for i in idx

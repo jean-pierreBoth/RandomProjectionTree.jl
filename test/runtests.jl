@@ -1,3 +1,7 @@
+using Test
+using RandomProjectionTree
+
+
 using Logging
 using Base.CoreLogging
 

@@ -1,6 +1,4 @@
-```@index
-Pages = ["index.md"]
-```
+# RandomProjectionTree
 
 ## Types
 
@@ -22,11 +20,9 @@ CurrentModule = RandomProjectionTree
 RandomProjectionTree.randomProjection
 ```
 
-
-
 ## Internals
-
 
 ```@autodocs
 Modules = [RandomProjectionTree]
+Public = false
 ```

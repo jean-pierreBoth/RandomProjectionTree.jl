@@ -1,3 +1,4 @@
+push!(LOAD_PATH, "../src/")
 
 DOCUMENTER_DEBUG=true
 
@@ -13,11 +14,3 @@ makedocs(
     ]
 )
 
-deploydocs(
-    repo = "RandomProjectionTree.git",
-    target = "build",
-    julia = "1.3",
-    osname = "linux",
-    deps = nothing,
-    make = nothing
-)

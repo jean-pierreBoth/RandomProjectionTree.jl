@@ -8,7 +8,7 @@
 
 
 
-
+using Printf
 
 export
 # TreeNode methods
@@ -74,9 +74,7 @@ mutable struct TreeNode{T, U}
     l::Threads.ReentrantLock
     # constructor with a parent
     function TreeNode{T,U}(parentArg::TreeNode{T,U}, dataArg::T) where {T,U}
-        if debugLevel > 0
-            println(" TreeNode constructor with parent")
-        end
+        @debug " TreeNode constructor with parent"
         # should check all array have the same dimension
         parent = parentArg
         depth = parent.depth+1
@@ -94,7 +92,7 @@ mutable struct TreeNode{T, U}
     end
     # constructor for root node of Tree with private data
     function TreeNode{T, U}(dataArg::T, privatedata::U) where{T,U}
-        println(" TreeNode constructor root")
+        @debug " TreeNode constructor root"
         depth = 0
         rankInParent = 0
         parent = nothing
@@ -104,7 +102,7 @@ mutable struct TreeNode{T, U}
     end
     # constructor for root node of Tree without private data
     function TreeNode{T, U}(dataArg::T) where{T,U}
-        println(" TreeNode constructor root")
+        @debug " TreeNode constructor root"
         depth = 0
         rankInParent = 0
         parent = nothing

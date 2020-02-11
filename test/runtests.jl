@@ -1,5 +1,4 @@
-using Test
-using RandomProjectionTree
+using Test, RandomProjectionTree
 
 
 using Logging
@@ -13,7 +12,3 @@ include("testrandom.jl")
 @testset "random" begin
     @test check_for_random_data()
 end
-
-
-
-include("testpli.jl")

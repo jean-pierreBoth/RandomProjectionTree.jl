@@ -18,7 +18,6 @@ rptreeDebugLevel = 1
 debuglock=Threads.ReentrantLock()
 
 
-include("Tree.jl")
 
 using Distances
 using Clustering
@@ -27,7 +26,9 @@ using Distributed
 using Statistics
 using LinearAlgebra
 using Random
+using Printf
 
+include("Tree.jl")
 
 const splitDiam = Int64(1)
 const splitProj = Int64(2)
@@ -80,13 +81,13 @@ end
 """
 # RPTProjParams
 
-This struct stores the dalong which data are projected.
+This struct stores the data along which data are projected.
 
  FIELDS
  
 
-* projray : ray on which do project data
-* cosineVector : a vector containing for each data the cosine with projray.
+. projray : ray on which do project data
+. cosineVector : a vector containing for each data the cosine with projray.
 
      Data are split according to position of cosine above or below median of cosine)
 """
@@ -112,10 +113,10 @@ want to do any learning
  FIELDS
  
 
-* split : the split event coded as constants `splitDiam` or `splitProj` or `splitNull`
-* diameters : a vector of size 2 containing mean diameter and then max diameter
-* projEvent  field of struct Union{RPTProjParams, Nothing}
-* diamEvent  field of struct Union{RPTDiamSplit, Nothing}
+. split : the split event coded as constants `splitDiam` or `splitProj` or `splitNull`
+. diameters : a vector of size 2 containing mean diameter and then max diameter
+. projEvent  field of struct Union{RPTProjParams, Nothing}
+. diamEvent  field of struct Union{RPTDiamSplit, Nothing}
 
   METHODS
   
@@ -172,7 +173,7 @@ const  RPTNode = TreeNode{KeyVector, RPTreeEvent}
  CONSTRUCTORS
  
  
-  
+
 """
 mutable struct RPTreeArg
     D::Distances.SemiMetric
@@ -295,37 +296,6 @@ function diameterEstimationByRange(D::Distances.SemiMetric, node::TreeNode{KeyVe
 end
 
 
-# just to test remote call , not really efficient
-
-function diameterEstimation2tasks(D::Distances.SemiMetric, node::TreeNode{KeyVector,RPTreeEvent} , fraction::Float64)
-    #
-    # diameter max and mean estimation
-    # We sample elements and compute distances between all couples
-    #                                          
-    nb=length(node.data)
-    keptI = filter(x -> (rand() < fraction) , 1:nb)
-    # could not use map!(node -> evaluate(D, node.data, center) , distances, collection)
-    # as we do not use all indices. ??
-    nbkept=length(keptI)
-    maxDiameter=0.
-    meanDiameter=0.
-    nbcouple = 0
-    res = Vector{ Tuple{Float64,Float64, Vector{Float64}} }(undef, 2)
-    m=round(Int64, nbkept/sqrt(2))
-    @sync begin
-        @async  res[1] = remotecall_fetch(2, diameterEstimationByRange, D, node, keptI, 2:m)
-        @async  res[2] = remotecall_fetch(3, diameterEstimationByRange, D, node, keptI, m+1:nbkept)        
-    end
-    meanDiameter = res[1][1] + res[2][1]        # sum of means
-    maxDiameter = max(res[1][2], res[2][2])     # max of max
-    nbcouple = (nbkept-1) * nbkept
-    meanDiameter = meanDiameter/nbcouple
-    # compute costs, get full symmetric matrix
-    costs=res[1][3] .+ res[2][3]
-    costmin,imin = findmin(costs)    
-    #
-    return meanDiameter, maxDiameter, imin
-end
 
 #
 # The following is not efficient
@@ -631,7 +601,7 @@ end
 function splitNodeParallel(rptarg::RPTreeArg, node::TreeNode)
     #
     depth = rptarg.depth    
-    @printf stdout "\n  splitNodeParallel process id : %d depth %d " myid()  node.depth
+    @debug "\n  splitNodeParallel process id : %d depth %d " myid()  node.depth
     #
     if node.depth < depth && length(node.data) > 0
         leftNode,rightNode = splitNodeDiamAndProjection(rptarg, node)
@@ -742,7 +712,6 @@ For leaves computes median and max diameter and associate an event with splitNul
 
 
 """
-
 function fillSplittingInfo(rptree::RPTree)
     node = rptree.treedata.root
     sampleSize = 512
@@ -776,15 +745,14 @@ end     # end of fillSplittingInfo
 
 
 """
+# function analyzeSplittingInfo(rptree::RPTree)
+
 This function is used a posteriori to get
     * number of split by diameter and projection
     Presently it computes statistics on leaves diameter
     an return leaves = Array{TreeNode{KeyVector,RPTreeEvent}}() and leafDiameters = Array{Float64,1}()
 
 """
-
-#    We just scan event dictionary
-
 function analyzeSplittingInfo(rptree::RPTree)
     leafDiameters = Array{Float64,1}()
     leaves = Vector{TreeNode{KeyVector,RPTreeEvent}}()
@@ -835,9 +803,8 @@ end    # end of analyzeSplittingInfo
 
     A function to fill a dictionary giving the leaf in which
     is initial item was dipatched
-     return a `Dict{Int64,TreeNode}`
+    return a `Dict{Int64,TreeNode}`
     """
-
 function fillItemLeafDict(rptree::RPTree)
     itemLeafDict = Dict{Int64, TreeNode{KeyVector, RPTreeEvent}}()
     # must check that eventDict is filled (or fillSplittingInfo has been called)

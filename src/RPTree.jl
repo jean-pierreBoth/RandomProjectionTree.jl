@@ -14,7 +14,7 @@
 #
 
 
-rptreeDebugLevel = 1
+const rptreeDebugLevel = 1
 debuglock=Threads.ReentrantLock()
 
 
@@ -44,13 +44,14 @@ export
 
 
 """
-KeyVector
+KeyVectorDict{Int64,Vector{Float64}}
 
-base data of node is an indexed vector
-So it is possible when in a node to know the rank
-in original data in tree the node consists in 
-keys(KeyVector) consists in rank of data in the  node in the original vector of vectors 
-dispatched in the tree  
+The base data of node is a vector indexed by its rank in original data
+so it is a : Dict{Int64,Vector{Float64}}.
+
+We store in a node the Dictionary associating the rank
+in original data and the corresponding data vector. 
+
 """
 const KeyVector = Dict{Int64,Vector{Float64}}
 
@@ -153,7 +154,6 @@ mutable struct RPTreeEvent
     end
 end
 
-const  RPTNode = TreeNode{KeyVector, RPTreeEvent}
 
 
 """
@@ -165,10 +165,17 @@ const  RPTNode = TreeNode{KeyVector, RPTreeEvent}
  
  *  D : the metric to use to compute all distances
  *  depth : The maximum depth of the tree
- *  threshold : the ratio between maxDiameter and mean distance between 2 objects above which
-    we split by diameter. If mean / maxDiameter > threshold we split by diameter. So
-    with threshold = 1. we always use diameter rule and the higher threshold is more 
-    we use projection
+ *  threshold : the ratio between the mean (meanD) and the max (maxD) of distances between 2 objetcs in node.
+
+    and the  maxDiameter and mean distance between 2 objects above which
+    we split by diameter. 
+    If maxD / meanD > threshold we split by diameter to reach some sphericity in the node 
+    else we split by projection.
+    So with threshold = 1. we always use split by diameter rule and the higher 
+    threshold the more split nodes by the Projection rule.
+    
+    The function analyzeSplittingInfo can be used to get information on the splitting after a run
+    and adjust threshold depending on the information obtained.
 
  CONSTRUCTORS
  
@@ -188,8 +195,9 @@ end
 
 """
 # RPTree
-The struct RPTree stores the list of event that occurred during tree construction
-The parameters used to grow the tree
+
+The struct RPTree stores the list of event that occurred during tree construction. 
+The parameters used to grow the tree are stored in field argument.
 
  FIELDS
    
@@ -537,7 +545,7 @@ end # end of splitNodeDiamAndProjection
 function splitNodeSerial(rptarg::RPTreeArg, node::TreeNode)
     #
     depth = rptarg.depth
-    if rptreeDebugLevel > 0
+    if rptreeDebugLevel > 1
         lock(debuglock)
         @printf stdout "\n splitNodeSerial process id : %d thread %d depth %d " myid() Threads.threadid()  node.depth
         unlock(debuglock)
@@ -552,7 +560,7 @@ function splitNodeSerial(rptarg::RPTreeArg, node::TreeNode)
         splitNodeSerial(rptarg, leftNode) 
         splitNodeSerial(rptarg, rightNode)
     end
-    if rptreeDebugLevel > 0
+    if rptreeDebugLevel > 1
         lock(debuglock)
         @printf stdout "\n splitNodeSerial process id : %d thread %d depth %d end " myid() Threads.threadid()  node.depth
         unlock(debuglock)
@@ -635,29 +643,43 @@ end
 
 """
 
-function randomProjection(rptree::RPTree)
+# function randomProjection(rptree::RPTree)
 
-The driver method that grow a tree up to argument depth
+The driver method that grow a tree up to argument depth. 
 
-NOTA : The method cannot be run twice on the same rptree
+The splitting of nodes is parallelised:
+. if ``nworkers() > 1`` the first node is split the left and right children are
+    are affected to two independents tasks via @spawnat : any. 
+
+. Furthermore if ``Threads.nthreads() > 1`` the next generation of children
+    is split in 2 independent threads, thus giving 4 independants sub trees generated
+    in parallel. 
+
+
+NOTA : The method cannot be run twice on the same rptree. A new RPTree
+must be initialized.
 
 
 """
 function randomProjection(rptree::RPTree)
     #
     node=rptree.treedata.root
+    nbcpus = nworkers()
+    @info "found nb workers " nbcpus
     #
-    if nworkers() <= 1 && Threads.nthreads() <= 1
-        @printf stdout "\n going serial"
+    if nbcpus <= 1 && Threads.nthreads() <= 1
+        @info "going serial"
         splitNodeSerial(rptree.argument, node)
-    elseif nworkers() <= 1 && Threads.nthreads() > 1
+    elseif nbcpus <= 1 && Threads.nthreads() > 1
+        @info "going to threads"
         splitNodeThreaded(rptree.argument, node)
     else
+        @info "going parallel"
         node = splitNodeParallel(rptree.argument, node)
         rptree.treedata.root = node
     end
     # now we must iterate through leaves of tree, compute centers and send that to clustering
-    @printf stdout "\n randomProjection, collecting leaves of tree \n"
+    @info "randomProjection: collecting leaves of tree \n"
     leafCenters=Array{Vector{Float64},1}()
     leaf = getFirstLeftLeaf(rptree.treedata)
     while leaf !== nothing
@@ -698,16 +720,10 @@ end
 
 
 
-# to get diameter of terminal leaves)
-function getLeafStatistics(rptree::RPTree)
-end
-
-#  a traversal of tree after splitting to get all splitting info (diameters and split mode)
-
 
 """
 
-    `function fillSplittingInfo(rptree::RPTree)`
+    function fillSplittingInfo(rptree::RPTree)
 
 fills `rptree.eventDict` with events describing how each splitted node was split
 For leaves computes median and max diameter and associate an event with splitNull
@@ -749,13 +765,19 @@ end     # end of fillSplittingInfo
 """
 # function analyzeSplittingInfo(rptree::RPTree)
 
-This function is used a posteriori to get
-    * number of split by diameter and projection
-    Presently it computes statistics on leaves diameter
-    an return leaves = Array{TreeNode{KeyVector,RPTreeEvent}}() and leafDiameters = Array{Float64,1}()
+This function is used a posteriori to get statistics on how nodes were split.
+    Presently it computes statistics on leaves diameter.
+
+    It returns :
+    
+. leaves = Array{TreeNode{KeyVector,RPTreeEvent}}()
+. leafDiameters : a Array{Float64,1} containing for each leaf its final diameter.
 
 """
 function analyzeSplittingInfo(rptree::RPTree)
+    #
+    @info "in analyzeSplittingInfo"
+    #
     leafDiameters = Array{Float64,1}()
     leaves = Vector{TreeNode{KeyVector,RPTreeEvent}}()
     nbsplitDiam = 0

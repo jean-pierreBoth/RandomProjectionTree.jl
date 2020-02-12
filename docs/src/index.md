@@ -1,28 +1,48 @@
 # RandomProjectionTree
 
-## Types
+```@meta
+CurrentModule = RandomProjectionTree
+```
+
+## User types
 
 ```@docs
-RandomProjectionTree.TreeNode
-RandomProjectionTree.Tree
 RandomProjectionTree.RPTreeEvent
 RandomProjectionTree.RPTreeArg
 RandomProjectionTree.RPTree
-```
-
-```@meta
-CurrentModule = RandomProjectionTree
+RandomProjectionTree.RPTProjParams
+RandomProjectionTree.RPTDiamSplit
+RandomProjectionTree.KeyVector
 ```
 
 ## Public Functions
 
 ```@docs
 RandomProjectionTree.randomProjection
+RandomProjectionTree.analyzeSplittingInfo
 ```
 
 ## Internals
 
-```@autodocs
-Modules = [RandomProjectionTree]
-Public = false
+### Tree types
+
+```@docs
+RandomProjectionTree.TreeNode
+RandomProjectionTree.Tree
+```
+
+### Tree functions
+
+```@docs
+getFirstLeftLeaf
+getNextLeafRight
+
+getFirstRightLeaf
+getNextLeafLeft
+
+getLeftSibling
+getRightSibling
+
+getDepthFirstNextRight
+getDepthFirstNextLeft
 ```

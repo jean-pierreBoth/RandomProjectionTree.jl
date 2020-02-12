@@ -10,7 +10,7 @@ makedocs(
     sitename = "RandomProjectionTree",
     pages = Any[
         "Introduction" => "INTRO.md",
-        "RPTree.jl functions" => "index.md",
+        "RPTree.jl " => "index.md",
     ]
 )
 

@@ -2,9 +2,7 @@
 #  Simple Tree container with no Key and no Rebalancing
 #  To be used in RandomProjectionTree
 #
-#  We can manipulate children  by  deleteat!(collection, index) and pop!(collection)
 #
-
 
 
 
@@ -37,28 +35,30 @@ export
 const debugLevel = 0
 
 """
-# TreeNode{T}
+# TreeNode{T,U}
 
 FIELDS
 ------
 
 a Treenode consists in
 
-*  an array of data of generic struct T
+*  an array of data of generic struct T for which there must exist a Distance.
 *  depth : depth in tree , root node is at depth 0.
 *  rankInParent : where a node is in parent.children field
 *  possibly a parent node
 *  an array of children node.
-*  some private data for possible use by application using Tree.
+*  some private data of type U for possible use by application using Tree.
     
 CONSTRUCTORS
  -----------
 
-1.    `function TreeNode{T}(parentArg::TreeNode{T}, dataArg::Array{T,1})`
+1.    `function TreeNode{T,U}(parentArg::TreeNode{T,U}, dataArg::T)`.  
        full constructor with parent node specified and data
     
-2.    `function TreeNode{T}(dataArg::Array{T,1})`.
-       constructor for root node without parent
+2.    `function TreeNode{T,U}(dataArg::T, privatedata::U)`. 
+       constructor for root node (without parent).
+
+3.    `function TreeNode{T, U}(dataArg::T)`
 """
 mutable struct TreeNode{T, U} 
     # fields   
@@ -114,10 +114,6 @@ mutable struct TreeNode{T, U}
 end
 
 
-#
-
-
-
 const NullNode = nothing
 
 
@@ -133,11 +129,11 @@ const NullNode = nothing
 
 
 """
- Tree{T}  and constructors
+ Tree{T,U}  and constructors
 
 a Tree consists in
 
-*  a root node of struct T
+*  a root node TreeNode{T, U}
 *  a lock to serialize operations on Tree if parallel computations are done
 
 """
@@ -276,6 +272,7 @@ end
 
 
 # returns Union{TreeNode{T,U}}, Nothing}
+# find next left node by going upward until we can go left.
 
 function goToNextLeft(t::Tree, n::TreeNode)
     next = nothing
@@ -301,9 +298,13 @@ function goToNextLeft(t::Tree, n::TreeNode)
 end
 
 
+"""
+#   function getDepthFirstNextRight(t::Tree, n::TreeNode)
 
-# iteration depth first left to right 
+A function to iterate through the tree by depth first left to right traversal
 
+    Returns a node or nothing if end of Tree is reached.
+"""
 function getDepthFirstNextRight(t::Tree, n::TreeNode)
     next = nothing
     # try to go down, if not possible go right
@@ -320,6 +321,13 @@ end
 
 # iteration depth first right to left
 
+"""
+#   function getDepthFirstNextLeft(t::Tree, n::TreeNode)
+
+    A function to iterate through the tree by depth first right to left traversal
+
+    Returns a node or nothing if end of Tree is reached.
+"""
 function getDepthFirstNextLeft(t::Tree, n::TreeNode)
     next = nothing
     # try to go down, if not possible go right
@@ -334,8 +342,9 @@ end
 
 
 """
-    function getLeftSibling(t::Tree, n::TreeNode)
-    return left sibling (left neighbour at same depth) of a node a Nullable{Node{T}} 
+#   function getLeftSibling(t::Tree, n::TreeNode)
+    
+    return left sibling (left neighbour at same depth) of a node or nothing
 """
 function getLeftSibling(t::Tree, n::TreeNode)
     if n.depth == 0
@@ -373,8 +382,9 @@ end
 
 
 """
-       function getRightSibling(t::Tree, n::TreeNode)
-    return right sibling (right neighbour at same depth) of a node a Nullable{Node{T}} 
+#   function getRightSibling(t::Tree, n::TreeNode)
+
+    return right sibling (right neighbour at same depth) of a node or nothing 
 """
 function getRightSibling(t::Tree, n::TreeNode)
     if n.depth == 0
@@ -415,12 +425,12 @@ end
 
 """
 
-    `function getFirstLeftLeaf(t::Tree)`
-    returns the first left lead as a Nullable{TreeNode}
+#    function getFirstLeftLeaf(t::Tree)
 
-to be chained with :
+    returns the left most leaf of the tree
 
-    `function getNextLeafRight(t::Tree, n::TreeNode)`
+    to be chained with :
+    function getNextLeafRight(t::Tree, n::TreeNode)
 
 """
 function getFirstLeftLeaf(t::Tree)
@@ -435,12 +445,10 @@ end
 
 """
 
-    function getFirstRightLeaf(t::Tree)
+#    function getFirstRightLeaf(t::Tree)
         
-    returns the first right leaf
-
-to be chained with
-
+    returns the rightmost leaf of the tree. 
+    to be chained with
     function getNextLeafLeft(t::Tree, n::TreeNode)
 
 """
@@ -456,7 +464,10 @@ end
 
 
 """
-  `function getNextLeafRight(t::Tree, n::TreeNode)`
+#  function getNextLeafRight(t::Tree, n::TreeNode)
+
+  returns leaf or nothing
+
 """
 function getNextLeafRight(t::Tree, n::TreeNode)
     nextleaf = nothing
@@ -472,9 +483,9 @@ end
 
 
 """
-  `function getNextLeafLeft(t::Tree, n::TreeNode)`
+#  function getNextLeafLeft(t::Tree, n::TreeNode)
 
-   returns leaf as a Nullable{TreeNode}
+   returns leaf or nothing
 """
 function getNextLeafLeft(t::Tree, n::TreeNode)
     nextleaf = nothing

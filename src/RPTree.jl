@@ -44,7 +44,7 @@ export
 
 
 """
-KeyVectorDict{Int64,Vector{Float64}}
+KeyVector
 
 The base data of node is a vector indexed by its rank in original data
 so it is a : Dict{Int64,Vector{Float64}}.

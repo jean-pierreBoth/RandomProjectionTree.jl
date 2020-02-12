@@ -424,7 +424,6 @@ end
 # to be abstracted in a leaf  left to right iterator
 
 """
-
 #    function getFirstLeftLeaf(t::Tree)
 
     returns the left most leaf of the tree
@@ -444,13 +443,11 @@ function getFirstLeftLeaf(t::Tree)
 end
 
 """
-
 #    function getFirstRightLeaf(t::Tree)
         
     returns the rightmost leaf of the tree. 
     to be chained with
     function getNextLeafLeft(t::Tree, n::TreeNode)
-
 """
 function getFirstRightLeaf(t::Tree)
     # iterates depth first until no more children

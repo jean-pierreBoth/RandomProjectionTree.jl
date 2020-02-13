@@ -10,7 +10,7 @@ function check_for_random_data()
     end
     D=Jaccard()
     depth = 8
-    argument = RPTreeArg(D, 8, 1.25)    
+    argument = RPTreeArg(D, 8, 1.5)    
     rptree=RPTree(argument, spectra)
     @time leafCenters = randomProjection(rptree)
     leaves, diameters = analyzeSplittingInfo(rptree)

@@ -74,7 +74,7 @@ mutable struct TreeNode{T, U}
     l::Threads.ReentrantLock
     # constructor with a parent
     function TreeNode{T,U}(parentArg::TreeNode{T,U}, dataArg::T) where {T,U}
-        @debug " TreeNode constructor with parent"
+    #    @debug " TreeNode constructor with parent"
         # should check all array have the same dimension
         parent = parentArg
         depth = parent.depth+1

@@ -575,7 +575,7 @@ end
 #
 function splitNodeThreaded(rptarg::RPTreeArg, node::TreeNode)
     depth = rptarg.depth
-    if rptreeDebugLevel > 0
+    if rptreeDebugLevel > 1
         lock(debuglock)
         @printf stdout "\n splitNodeTheaded process id : %d depth %d " myid()   node.depth
         unlock(debuglock)

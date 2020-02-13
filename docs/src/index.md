@@ -12,7 +12,6 @@ RandomProjectionTree.RPTreeArg
 RandomProjectionTree.RPTree
 RandomProjectionTree.RPTProjParams
 RandomProjectionTree.RPTDiamSplit
-RandomProjectionTree.KeyVector
 ```
 
 ## Public Functions

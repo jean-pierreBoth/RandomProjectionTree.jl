@@ -179,7 +179,7 @@ end
 
  CONSTRUCTORS
  
- 
+ RPTreeArg(D::Distances.SemiMetric, depth::Int64, thresh::Float64)
 
 """
 mutable struct RPTreeArg

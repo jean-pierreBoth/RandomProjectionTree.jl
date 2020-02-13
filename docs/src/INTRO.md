@@ -1,12 +1,5 @@
 # a julia implementation of Random Projection Tree Classifier
 
-interesting distances are (using package Distances) 
-
-* Euclidean     L2
-* Cityblock     L1
-* Jaccard       fuzzy nucleotide : 1 - sum min (a,b)/ sum max(a,b).
-* CosineDist
-
 ## Method and Algorithm
 
 ### A rough description of the algorithm
@@ -42,13 +35,26 @@ The code was tested in Mass Spectrometry Imaging problems mainly with distances:
 
 * Euclidean     L2
 * Cityblock     L1
-* Jaccard       fuzzy nucleotide :
+* Jaccard       fuzzy nucleotide :  $d(a,b) = 1 - \frac{\sum_{i}{\min(a_i,b_i)}}{\sum_i{\max(a_i, b_i)}}$
 
-    $d(a,b) = 1 - \frac{\sum_{i}{\min(a_i,b_i)}}{\sum_i{\max(a_i, b_i)}}$
-    
 * CosineDist
 
 (Cf package Distances)
+
+
+A typical tree with 22000 vectors of length 11500 needs 50s to build with a depth of 8 i.e with 256 leaves and Jaccard distances (with parallelism level 4 i.e 2 workers and 4 threads on a laptop).
+
+## License
+
+Licensed under either of
+
+* Apache License, Version 2.0 <http://www.apache.org/licenses/LICENSE-2.0>
+
+* MIT license  <http://opensource.org/licenses/MIT>
+
+at your option.
+
+This software was written on my own while working at [CEA](http://www.cea.fr/), [CEA-LIST](http://www-list.cea.fr/en/)
 
 ## References
 

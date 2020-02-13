@@ -92,7 +92,7 @@ mutable struct TreeNode{T, U}
     end
     # constructor for root node of Tree with private data
     function TreeNode{T, U}(dataArg::T, privatedata::U) where{T,U}
-        @debug " TreeNode constructor root"
+        @trace " TreeNode constructor root"
         depth = 0
         rankInParent = 0
         parent = nothing
@@ -102,7 +102,7 @@ mutable struct TreeNode{T, U}
     end
     # constructor for root node of Tree without private data
     function TreeNode{T, U}(dataArg::T) where{T,U}
-        @debug " TreeNode constructor root"
+        @trace " TreeNode constructor root"
         depth = 0
         rankInParent = 0
         parent = nothing

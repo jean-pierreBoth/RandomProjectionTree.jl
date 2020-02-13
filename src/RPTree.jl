@@ -655,6 +655,10 @@ The splitting of nodes is parallelised:
     is split in 2 independent threads, thus giving 4 independants sub trees generated
     in parallel. 
 
+Returns:
+-------
+* an Array{Vector{Float64},1} storing the center of leaves data vectors.
+
 
 NOTA : The method cannot be run twice on the same rptree. A new RPTree
 must be initialized.

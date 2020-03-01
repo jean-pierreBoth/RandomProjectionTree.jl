@@ -20,9 +20,7 @@ debuglock=Threads.ReentrantLock()
 
 
 using Distances
-using Clustering
 using Match
-using Distributed
 using Statistics
 using LinearAlgebra
 using Random

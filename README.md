@@ -6,7 +6,7 @@ The implementation follows the papers of Das Gupta and Freund.
 
 The data are first stored in a root node of a tree.
 Then an equilibrated binary tree is created by propagating data down to leaves according to random projection and a sphericity constrains inside nodes.
-We thus get a collection of $2^d$ leaves if d is the depth of the tree asked for.
+We thus get a collection of $2^{d}$ leaves if d is the depth of the tree asked for.
   
 ## License
 

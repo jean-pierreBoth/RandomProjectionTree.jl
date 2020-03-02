@@ -2,7 +2,7 @@ using Printf
 using Distances
 
 function check_for_random_data()
-    nbspectra = 10000
+    nbspectra = 20000
     nbval = 5000
     spectra = Array{Array{Float64,1},1}(undef, nbspectra)
     for i in 1:nbspectra

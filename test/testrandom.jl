@@ -3,7 +3,7 @@ using Distances
 
 function check_for_random_data()
     nbspectra = 20000
-    nbval = 5000
+    nbval = 10000
     @debug "check_for_random_data: dispatching nbspecta : " nbspectra
     spectra = Array{Array{Float64,1},1}(undef, nbspectra)
     for i in 1:nbspectra

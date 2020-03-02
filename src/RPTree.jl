@@ -61,13 +61,12 @@ const KeyVector = Dict{Int64,Vector{Float64}}
 
 This struct stores data necessary to describe a split by diameter
 
-    FIELDS
-    -----
+FIELDS
+-----
 
 * pivot : the vector aroud which we construct a ball to split
 * radius : distance to pivot above which we go to right, under which we go to left
-
-    """
+ """
 mutable struct RPTDiamSplit
     pivot::Vector{Float64}
     radius::Float64
@@ -83,13 +82,13 @@ end
 
 This struct stores the data along which data are projected.
 
- FIELDS
- 
+FIELDS
+------ 
 
-. projray : ray on which do project data
-. cosineVector : a vector containing for each data the cosine with projray.
+- projray : ray on which do project data  
+- cosineVector : a vector containing for each data the cosine with projray.
 
-     Data are split according to position of cosine above or below median of cosine)
+Data are split according to position of cosine above or below median of cosine)
 """
 mutable struct RPTProjParams
     projray::Vector{Float64}
@@ -647,10 +646,10 @@ end
 The driver method that grow a tree up to argument depth. 
 
 The splitting of nodes is parallelised:
-. if ``nworkers() > 1`` the first node is split the left and right children are
-    are affected to two independents tasks via @spawnat : any. 
+- if ``nworkers() > 1`` the first node is split the left and right children are
+    are affected to two independents tasks via @spawnat : any.  
 
-. Furthermore if ``Threads.nthreads() > 1`` the next generation of children
+- Furthermore if ``Threads.nthreads() > 1`` the next generation of children
     is split in 2 independent threads, thus giving 4 independants sub trees generated
     in parallel. 
 
@@ -661,8 +660,6 @@ Returns:
 
 NOTA : The method cannot be run twice on the same rptree. A new RPTree
 must be initialized.
-
-
 """
 function randomProjection(rptree::RPTree)
     #
@@ -770,11 +767,9 @@ end     # end of fillSplittingInfo
 
 This function is used a posteriori to get statistics on how nodes were split.
     Presently it computes statistics on leaves diameter.
-
     It returns :
-    
-. leaves = Array{TreeNode{KeyVector,RPTreeEvent}}()
-. leafDiameters : a Array{Float64,1} containing for each leaf its final diameter.
+- leaves = Array{TreeNode{KeyVector,RPTreeEvent}}()  
+- leafDiameters : a Array{Float64,1} containing for each leaf its final diameter.
 
 """
 function analyzeSplittingInfo(rptree::RPTree)

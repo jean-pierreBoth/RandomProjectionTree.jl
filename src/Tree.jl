@@ -426,10 +426,10 @@ end
 """
 #    function getFirstLeftLeaf(t::Tree)
 
-    returns the left most leaf of the tree
+returns the left most leaf of the tree
 
-    to be chained with :
-    function getNextLeafRight(t::Tree, n::TreeNode)
+to be chained with :
+function getNextLeafRight(t::Tree, n::TreeNode)
 
 """
 function getFirstLeftLeaf(t::Tree)
@@ -445,8 +445,8 @@ end
 """
 #    function getFirstRightLeaf(t::Tree)
         
-    returns the rightmost leaf of the tree. 
-    to be chained with
+returns the rightmost leaf of the tree. 
+The call to this functio is to be chained with :  
     function getNextLeafLeft(t::Tree, n::TreeNode)
 """
 function getFirstRightLeaf(t::Tree)
@@ -463,7 +463,7 @@ end
 """
 #  function getNextLeafRight(t::Tree, n::TreeNode)
 
-  returns leaf or nothing
+returns leaf or nothing
 
 """
 function getNextLeafRight(t::Tree, n::TreeNode)
@@ -482,7 +482,7 @@ end
 """
 #  function getNextLeafLeft(t::Tree, n::TreeNode)
 
-   returns leaf or nothing
+returns leaf or nothing
 """
 function getNextLeafLeft(t::Tree, n::TreeNode)
     nextleaf = nothing

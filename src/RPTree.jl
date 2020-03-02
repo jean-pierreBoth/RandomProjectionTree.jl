@@ -25,6 +25,7 @@ using Statistics
 using LinearAlgebra
 using Random
 using Printf
+using Distributed
 
 include("Tree.jl")
 

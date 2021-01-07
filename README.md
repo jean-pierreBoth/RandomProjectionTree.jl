@@ -18,7 +18,6 @@ Licensed under either of
 
 at your option.
 
-
 ## References
 
 1. **DasGupta S. Freund Y. Random projection trees for vector quantization 2009**.

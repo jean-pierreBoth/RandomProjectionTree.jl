@@ -843,7 +843,7 @@ function fillItemLeafDict(rptree::RPTree)
             itemLeafDict[i] = leaf
         end
         # 
-        leaf = getNextLeafRight(leaf)
+        leaf = getNextLeafRight(rptree,leaf)
     end
     return itemLeafDict
 end

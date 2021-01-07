@@ -4,7 +4,6 @@
 
 ### A rough description of the algorithm
 
-
 The data are first stored in a root node of a tree.
 
 Then the data is split in 2 descendant nodes.
@@ -23,7 +22,7 @@ The balance between the 2 modes of node splitting is adjusted by the **_threshol
 
 The implementation relies on a minimal binary Tree type implemented in file Tree.jl.
 
-The construction of the random projection tree **_(RPTree)_** is somewhat parallelised: 
+The construction of the random projection tree **_(RPTree)_** is somewhat parallelised:
 
 * If ``nworkers() > 1`` the 2 nodes of the first generation are affected to 2 differents tasks.
 
@@ -40,7 +39,6 @@ The code was tested in Mass Spectrometry Imaging problems mainly with distances:
 * CosineDist
 
 (Cf package Distances)
-
 
 A typical tree with 22000 vectors of length 11500 needs 50s to build with a depth of 8 i.e with 256 leaves and Jaccard distances (with parallelism level 4 i.e 2 workers and 4 threads on a laptop).
 
